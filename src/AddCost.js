@@ -11,22 +11,23 @@ const GET_GROUPS = gql`
   query GetGroups {
     groups {
       groupName
+      subGroups {
+        subGroupName
+      }
     }
   }
 `;
 
 function AddCost() {
-  const [group, setGroup] = useState("");
-  const [subGroup, setSubGroup] = useState("");
+  const [group, setGroup] = useState({});
+  const [subGroup, setSubGroup] = useState({});
 
   const { loading, error, data } = useQuery(GET_GROUPS);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error : {error.message}</p>;
 
-  const handleChange = (event) => {
-    setGroup(event.target.value);
-  };
+  console.log("group :>> ", group);
 
   return (
     <div
@@ -45,27 +46,31 @@ function AddCost() {
             id="demo-simple-select"
             value={group.groupName}
             label="Group"
-            onChange={handleChange}
+            onChange={(event) => {
+              setGroup(event.target.value);
+              setSubGroup({});
+            }}
           >
             {data.groups.map((group) => (
               <MenuItem value={group}>{group.groupName}</MenuItem>
             ))}
           </Select>
         </FormControl>
-        {/* <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">SubGroup</InputLabel>
+        <FormControl fullWidth sx={{ marginTop: "20px" }}>
+          <InputLabel id="demo-simple-select-label">Sub Group</InputLabel>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={age}
-            label="Age"
-            onChange={handleChange}
+            value={subGroup}
+            label="subGroup"
+            onChange={(event) => setSubGroup(event.target.value)}
+            disabled={!group.groupName}
           >
-            <MenuItem value={10}>Ten</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
+            {group.subGroups?.map((subGroup) => (
+              <MenuItem value={subGroup}>{subGroup.subGroupName}</MenuItem>
+            ))}
           </Select>
-        </FormControl> */}
+        </FormControl>
       </Box>
     </div>
   );
